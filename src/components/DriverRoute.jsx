@@ -10,7 +10,6 @@ export const DriverRoute = () => {
                 <RouteCard />
                 <RouteCard />
                 <RouteCard />
-                <RouteCard />
             </Stack>
         </div>
     )

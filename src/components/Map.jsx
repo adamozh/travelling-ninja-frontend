@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
-import { GoogleMap, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
+import React from 'react'
+import { GoogleMap, Marker, DirectionsService, DirectionsRenderer, useJsApiLoader } from '@react-google-maps/api';
 import { locations } from '../static/locations';
-import { SwipeableDrawer } from '@mui/material';
 import SwipeableEdgeDrawer from './SwipableEdgeDrawer';
 
 const containerStyle = {
@@ -10,8 +9,8 @@ const containerStyle = {
 };
 
 const center = {
-    lat: -3.745,
-    lng: -38.523
+    lat: 1.3521,
+    lng: 103.8198
 };
 
 export const Map = () => {
@@ -23,6 +22,17 @@ export const Map = () => {
     })
 
     const [map, setMap] = React.useState(null)
+    const [response, setResponse] = React.useState(null)
+
+    const directionsCallback = (response) => {
+        if (response !== null) {
+            if (response.status === 'OK') {
+                setResponse(response)
+            } else {
+                console.log('response: ', response)
+            }
+        }
+    }
 
     const onLoad = React.useCallback(function callback(map) {
         const bounds = new window.google.maps.LatLngBounds();
@@ -41,7 +51,17 @@ export const Map = () => {
         return location.lat + location.lng
     }
     
-  return isLoaded ? (
+    const directionsServiceOptions = {
+        destination: locations[90],
+        origin: locations[0],
+        travelMode: 'DRIVING'
+    }
+
+    const directionsRendererOptions = {
+            directions: response
+    }
+
+    return isLoaded ? (
       <div>
     <GoogleMap
         mapContainerStyle={containerStyle}
@@ -65,7 +85,32 @@ export const Map = () => {
                 />
             )
         })}
-      
+        <DirectionsService
+            // required
+            options={directionsServiceOptions}
+            // required
+            callback={directionsCallback}
+            // optional
+            onLoad={directionsService => {
+            console.log('DirectionsService onLoad directionsService: ', directionsService)
+            }}
+            // optional
+            onUnmount={directionsService => {
+            console.log('DirectionsService onUnmount directionsService: ', directionsService)
+            }}
+        />
+        <DirectionsRenderer
+            // required
+            options={directionsRendererOptions}
+            // optional
+            onLoad={directionsRenderer => {
+            console.log('DirectionsRenderer onLoad directionsRenderer: ', directionsRenderer)
+            }}
+            // optional
+            onUnmount={directionsRenderer => {
+            console.log('DirectionsRenderer onUnmount directionsRenderer: ', directionsRenderer)
+            }}
+        />
     </GoogleMap>
     <SwipeableEdgeDrawer />
     </div>

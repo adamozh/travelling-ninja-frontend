@@ -16,14 +16,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { Avatar, ClickAwayListener } from '@mui/material';
+import { Avatar } from '@mui/material';
 import profile from '../static/profile.png';
 import { Route, Switch, Link } from 'react-router-dom';
 import { Home } from './Home';
 import { Map } from './Map';
 import { DriverRoute } from './DriverRoute';
-import SwipeableEdgeDrawer from './SwipableEdgeDrawer';
 
 const drawerWidth = 240;
 
