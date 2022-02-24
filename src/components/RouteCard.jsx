@@ -5,6 +5,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { Button, Checkbox, Modal, styled } from '@mui/material';
+import { hello, verifyAWB } from '../api/api';
 
 
 const Input = styled('input')({
@@ -24,18 +25,27 @@ const modalStyle = {
     p: 4,
 };
 
-export default function RouteCard() {
+export default function RouteCard(props) {
 
     const [submitted, setSubmitted] = React.useState(false)
     const [open, setOpen] = React.useState(false)
 
+    const Example = ({data}) => <img src={`data:image/jpeg;base64,${data}`} width='100%' />
+
     const handleOnChange = (event) => {
-        console.log(event.currentTarget.files[0])
-         // Submit, wait for API
+        // console.log(event.currentTarget.files[0])
+        // Submit, wait for API
         setOpen(true)
         setSubmitted(true)
-        console.log(submitted)
+        verifyAWB(event.currentTarget.files[0])
+        .then(res => res.json())
+        .then(data => {
+            data['img'] = <Example data={data['img']} />
+            setResults(data)
+        })
     }
+
+    const [results, setResults] = React.useState(null)
 
     return (
         <Card sx={{ minWidth: 275 }}>
@@ -45,22 +55,22 @@ export default function RouteCard() {
                         TO DELIVER
                     </Typography>
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                        9AM - 12PM
+                        {props.details.timeslot}
                     </Typography>
                 </Box>
                 <Typography variant="body2" textAlign={'left'}>
-                    177 Orchard Rd - Orchard Central #06-02
+                    {props.details.address}
                 </Typography>
                 <Typography variant="body2" textAlign={'left'}>
-                    Adam Oh Zhi Hong
+                    {props.details.name}
                 </Typography>
                 <Typography variant="body2" textAlign={'left'}>
-                    NOEWFJOIEWJFLK84792
+                    {props.details.id}
                 </Typography>
             </CardContent>
             <CardActions>
             <label htmlFor="contained-button-file">
-                <Input accept="image/*" id="contained-button-file" type="file" onChange={handleOnChange}/>
+                <Input formMethod='POST' formEncType='multipart/form-data' accept="image/*" id="contained-button-file" type="file" name='image' onChange={handleOnChange}/>
                 <Button variant="contained" component="span" size='small'>
                 Upload POD
                 </Button>
@@ -74,12 +84,10 @@ export default function RouteCard() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={modalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Text in a modal
-                </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                </Typography>
+                {results != null && <Typography id="modal-modal-title" variant="h6" component="h2">
+                    {`POD is ${results['isValid'] ? 'Valid' : 'Invalid'}`}
+                </Typography>}
+                {results!= null && results['img']}
                 </Box>
             </Modal>
         </Card>
